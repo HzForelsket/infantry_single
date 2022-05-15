@@ -273,7 +273,10 @@ void Control::Chassis::PowerUpdate(int32_t* speedx, int32_t* speedy, int32_t* sp
 	now_chassis_power = now_chassis_power_kalman.Filter(judgement.data.ext_power_heat_data_t.chassis_power);
 	static double del_used_power_limit = 0.0;
 	double error;
-	error = chassis_power_limit - now_chassis_power;
+	if (!openBuffer)
+		error = chassis_power_limit - now_chassis_power;
+	else
+		error = chassis_power_limit - now_chassis_power + chassis_buffer;
 	if ((*speedx) || (*speedy) || (*speedz))
 		del_used_power_limit = MIN(MAX(del_used_power_limit + speed_limit_PID.Delta(error), 0.0), 5.0);
 	else

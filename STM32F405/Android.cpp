@@ -76,14 +76,17 @@ void Android::OnIRQHandler(uint16_t rxSize)
 	else
 	{
 		memcpy(&infopack, rxData, sizeof(InfoPack));
-		send_error_message();
+		//send_error_message();
 		angle = infopack.angle;
 		angle.yaw = (-angle.yaw + 180.f);
 		angle.pitch = (-angle.pitch + 90.f);
 		angle.roll = (-angle.roll + 180.f);
 		aim = infopack.aim;
-		aim.x = infopack.aim.x - 0.103906f;//修正偏移量
+		if (aim.x)
+			aim.x = infopack.aim.x - 0.103906f;//修正偏移量
+		if (aim.y)
 		aim.y = -1.0 * infopack.aim.y - 0.2377083f;
+		
 	}
 
 }

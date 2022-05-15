@@ -124,9 +124,9 @@ extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		ctrl.Update();
 		judgement.GetData();
 		judgement.SendData();
-		//android.send_error_message();
+		
 	}
-	
+	android.send_error_message();
 	if (tasks.counter % 4 == 0)
 	{
 		for (auto &motor : can1_motor)motor.Ontimer(can1.data, can1_data);

@@ -81,20 +81,20 @@ Motor can1_motor[can1MotorNumber] = {
 	Motor(M3508,SPD,chassisMotor,  ID2, PID(10.f, 0.0655f, 3.49e-4f)),
 	Motor(M3508,SPD,chassisMotor,  ID3, PID(10.f, 0.0655f, 3.49e-4f)),
 	Motor(M3508,SPD,chassisMotor,  ID4, PID(10.f, 0.0655f, 3.49e-4f)),
-	//Motor(M6020,POS,yawMotor,  ID5, PID(120.f, 0.f, 3.f,0.f),
-	//								PID(0.2f, 0.f, 4.f,0.f)),
-	Motor(M6020,POS,yawMotor,  ID5, PID(150.f, 0.f, 200.f,0.f),
+	Motor(M6020,POS,yawMotor,  ID5, PID(200.f, 0.f, 300.f,0.f),
 									PID(0.5f, 0.01f, 10.f,0.f)),
+	//Motor(M6020,POS,yawMotor,  ID5, PID(80.f, 0.f, 20.f,0.f),
+	//								PID(0.5f, 0.01f, 10.f,0.f)),
 };
 
 Motor can2_motor[can2MotorNumber] = {
 	Motor(M3508,SPD,rubMotor, ID1, PID(10.f, 0.0655f, 3.49e-4f)),
 	Motor(M3508,SPD,rubMotor, ID2, PID(10.f, 0.0655f, 3.49e-4f)),
 	Motor(M2006,ACE,hitMotor, ID3, PID(4.0f, 0.1f, 5.f)),
-	//Motor(M6020,POS,pitchMotor, ID4, PID(0.f,0.f,0.f,0.f),
-	//								PID(0.f,0.f,0.f,0.f)),
-	Motor(M6020,POS,pitchMotor, ID6, PID(80.f, 0.1f, 20.f,0.f),
-									PID(0.8f, 0.01f, 16.f,0.f)),
+	Motor(M6020,POS,pitchMotor, ID6, PID(100.f,0.f,150.f,0.f),
+									PID(0.8f,0.01f,10.f,0.f)),
+	//Motor(M6020,POS,pitchMotor, ID6, PID(80.f, 0.1f, 20.f,0.f),
+	//								PID(0.5f, 0.01f, 10.f,0.f)),
 };
 
 

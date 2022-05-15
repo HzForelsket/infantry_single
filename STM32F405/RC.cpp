@@ -43,26 +43,17 @@ void RC::OnIRQHandler(size_t rxSize)
 	pc.key_h = m_frame[15];
 	pc.key_l = m_frame[14];
 
-	if (android.mode == IMU::ANDROID)
-	{
+
 		memcpy(&imu_pantile.angle, &android.angle, sizeof(Angle));
 		memcpy(&imu_pantile.aim, &android.aim, sizeof(Aim));
-	}
-	else
-	{
-		imu_pantile.aim.x = 0;
-		imu_pantile.aim.y = 0;
-	}
 }
 
 void RC::OnRC()
 {
 	if (rc.s[0] == mid_position)
 	{	
-
-		m_iwdg.IWDG_Feed();
 		android.mode = IMU::GYRO;
-
+		m_iwdg.IWDG_Feed();
 		switch (rc.s[1])
 		{
 		case up_position:
@@ -71,6 +62,9 @@ void RC::OnRC()
 			ctrl.manual_shoot(false, true, true);
 			break;
 		case mid_position:
+			//ctrl.chassis.openBuffer = true;
+
+
 			ctrl.manual_shoot(false, false, false);
 			if (rc.ch[0] || rc.ch[1])
 			{
@@ -78,8 +72,8 @@ void RC::OnRC()
 				{
 					if (rc.fritIntoLock)
 					{
-						imu_pantile.initialYaw = imu_pantile.GetAngleYaw();
-						imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+						android.initialYaw = android.GetAngleYaw();
+						android.initialPitch = android.GetAnglePitch();
 					}
 					rc.fritIntoLock = false;
 					lock_mode = true;
@@ -118,8 +112,8 @@ void RC::OnRC()
 		case down_position:
 			if (!top_mode)
 			{
-				imu_pantile.initialYaw = imu_pantile.GetAngleYaw();
-				imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+				android.initialYaw = android.GetAngleYaw();
+				android.initialPitch = android.GetAnglePitch();
 				top_mode = true;//进入小陀螺模式
 				follow_mode = false;
 				lock_mode = false;
@@ -178,12 +172,20 @@ void RC::OnPC()
 		{
 			ctrl.shooter.heat_ulimit = false;
 		}
+		if (pc.key_h & C)
+		{
+			ctrl.chassis.openBuffer = true;
+		}
+		else
+		{
+			ctrl.chassis.openBuffer = false;
+		}
 		if (pc.key_l & Q)
 		{
 			if (!top_mode)
 			{
-				imu_pantile.initialYaw = imu_pantile.GetAngleYaw();
-				imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+				android.initialYaw = android.GetAngleYaw();
+				android.initialPitch = android.GetAnglePitch();
 				pc.prePressShift = false;
 				top_mode = true;//进入小陀螺模式
 				follow_mode = false;
@@ -195,8 +197,8 @@ void RC::OnPC()
 		{
 			if (!lock_mode)
 			{
-				imu_pantile.initialYaw = imu_pantile.GetAngleYaw();
-				imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+				android.initialYaw = android.GetAngleYaw();
+				android.initialPitch = android.GetAnglePitch();
 				ctrl.chassis.m_chassisMode = Control::Chassis::LOCK;
 				first_enter_lock_mode = true;
 				top_mode = false;//退出小陀螺模式
@@ -205,11 +207,7 @@ void RC::OnPC()
 			}
 
 		}
-		if (pc.key_h & Z)
-		{
-			pc.x = 0;
-			pc.y = 0;
-		}
+		
 		if (pc.key_l & CTRL)
 		{
 			auto_aim = true;
@@ -235,16 +233,16 @@ void RC::OnPC()
 					pc.setZ = adjspeed;//底盘旋转
 					if (!pc.prePressShift)
 					{
-						imu_pantile.initialYaw = imu_pantile.GetAngleYaw()+front_adjustment;
-						if (imu_pantile.initialYaw>180.f)
+						android.initialYaw = android.GetAngleYaw()+front_adjustment;
+						if (android.initialYaw>180.f)
 						{
-							imu_pantile.initialYaw -= 180.f;
+							android.initialYaw -= 180.f;
 						}
-						else if(imu_pantile.initialYaw<-180.f)
+						else if(android.initialYaw<-180.f)
 						{
-							imu_pantile.initialYaw += 180.f;
+							android.initialYaw += 180.f;
 						}
-						imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+						android.initialPitch = android.GetAnglePitch();
 					}
 					pc.prePressShift = true;
 				}
@@ -254,8 +252,8 @@ void RC::OnPC()
 					//ctrl.chassis.m_chassisMode = Control::Chassis::FOLLOW;
 					if (pc.prePressShift)
 					{
-						imu_pantile.initialYaw = imu_pantile.GetAngleYaw();
-						imu_pantile.initialPitch = imu_pantile.GetAnglePitch();
+						android.initialYaw = android.GetAngleYaw();
+						android.initialPitch = android.GetAnglePitch();
 					}
 					pc.setZ = 0;
 					pc.prePressShift = false;
@@ -285,15 +283,23 @@ void RC::OnPC()
 					pc.setZ = 0;
 				}
 			}
-
 			ctrl.manual_chassis(pc.setX, pc.setY, pc.setZ);
+		}
+
+		if (pc.key_h & Z)
+		{
+			ch_yaw = 0;
+			ch_pitch = 0;
 		}
 		if (auto_aim)
 		{
-			ctrl.manual_pantile(pcGetMove(degreeToMechanical(imu_pantile.aim.x)), pcGetMove(degreeToMechanical(imu_pantile.aim.y)));
+			double k = 2.0;
+			if(abs(android.aim.x)>0.05||abs( android.aim.y)>0.05)
+			ctrl.manual_pantile(pcGetMove(degreeToMechanical(android.aim.x*k)), pcGetMove(degreeToMechanical(android.aim.y*k)));
 		}
 		else
 		{
+			//if(!(pc.key_h & Z)
 			ctrl.manual_pantile(pcGetMove(ch_yaw), pcGetMove(ch_pitch));
 		}
 	}

@@ -22,7 +22,7 @@ public:
 			LOCK, FOLLOW, ROTATION
 		};
 		Motor* chassis[4];
-		PID chassis_LOCK_PID{5.f,0.f,0.f};
+		PID chassis_LOCK_PID{2.f,0.f,0.f};
 		PID  power{30.f,200.f,2000.f};
 		PID speed_limit_PID{0.0003f,0.f,0.f};
 		Kalman now_chassis_power_kalman{ 1.f,30.f };
@@ -39,7 +39,7 @@ public:
 	{
 		Motor* pantile[2];
 		Android* android;
-		PID pantile_PID[3] = { {0.065f,0.f,0.f},{0.05f,0.f,0.f}, {0.04f,0.f,0.f} };
+		PID pantile_PID[3] = { {0.04f,0.001f,0.f},{0.05f,0.f,0.f}, {0.04f,0.f,0.f} };
 		const uint16_t midyaw = 5609;//yaw轴初始角度
 		float pitchmax = 6400, pitchmin = 4750;//pitch轴限位
 		float setpitch = (pitchmax + pitchmin) / 2, setyaw = midyaw;//pitch轴初始角度
